@@ -54,6 +54,7 @@ def zlecenie(dane):
         return("Zły tydzień")
     if tydzień-1 <= 0:
         print("Nie można ukończyć zlecenia na czas")
+        return
     kolumna = ["Zamówione stoły","Zamówione krzesła","Wstępne blaty","Potrzebne blaty","Wstępne nogi","Potrzebne nogi","Wstępne siedziska","Potrzebne siedziska","Wstępne nóżki","Potrzebne nóżki"]
     #powiększenie tabelki jeżeli za mała
     if tydzień-1 > len(tabelka["Tydzień"]):
