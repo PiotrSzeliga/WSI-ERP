@@ -1,11 +1,24 @@
 import tkinter as tk
 from webbrowser import open_new
 
+root = tk.Tk()
+root.geometry("910x500")
+root.resizable(width=False, height=False)
+root.title("MRP 235032")
+
+def callback(input):
+        if input.isdigit():
+            return True
+        elif input == "":
+            return True
+        else:
+            return False
+
 magazyn = {
-    "blaty": 20,
-    "nogi": 4,
-    "siedziska": 5,
-    "nóżki": 3
+    "blaty": 1,
+    "nogi": 1,
+    "siedziska": 1,
+    "nóżki": 1
 } 
 
 tabelka_czysta = {
@@ -22,15 +35,17 @@ tabelka_czysta = {
     "Potrzebne nóżki":      [0 for x in range(1,10)],
 }
 
-def rysuj(słownik):
+tabelka = tabelka_czysta
+
+def rysuj():
     counter = 0
-    for i in słownik.keys():
+    for i in tabelka.keys():
         k = tk.Entry(tableframe,relief="groove",bg="snow3",font=("Cambria",14),width=15)
         k.grid(row=counter, column=0,sticky="NS")
         k.insert(0,i)
         counter +=1
         counter2 = 1
-        for j in słownik[i]:
+        for j in tabelka[i]:
             e = tk.Entry(tableframe,relief="groove",bg="white",font=('Arial', 14),width=5)
             e.grid(row=counter-1, column=counter2,sticky="NS")
             e.insert(0, j)
@@ -43,15 +58,17 @@ def zlecenie(dane):
         krzesła = dane[2]
         zestaw = dane[3]
     except TypeError:
-        return None
+        return 
     #combo
     stoły += zestaw
     krzesła += 2*zestaw
     #warunki do sprawdzenia
     if stoły < 0 or krzesła < 0 or zestaw < 0:
-        return("Zła ilość")
+        print("Zła ilość")
+        return 
     if tydzień <= 0:
-        return("Zły tydzień")
+        print("Zły tydzień")
+        return
     if tydzień-1 <= 0:
         print("Nie można ukończyć zlecenia na czas")
         return
@@ -65,9 +82,9 @@ def zlecenie(dane):
                     tabelka["Wstępne blaty"].append(tabelka["Wstępne blaty"][-1])
                 elif c == "Wstępne nogi":
                     tabelka["Wstępne nogi"].append(tabelka["Wstępne nogi"][-1])
-                elif c == "Wstępne nogi":
+                elif c == "Wstępne siedziska":
                     tabelka["Wstępne siedziska"].append(tabelka["Wstępne siedziska"][-1])
-                elif c == "Wstępne nogi":
+                elif c == "Wstępne nóżki":
                     tabelka["Wstępne nóżki"].append(tabelka["Wstępne nóżki"][-1])
                 else:
                     tabelka[f"{c}"].append(0)
@@ -108,27 +125,21 @@ def zlecenie(dane):
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne nóżki"][tydzień+i-1] = tabelka["Wstępne nóżki"][tydzień-2]-3*tabelka["Zamówione krzesła"][tydzień-1]
     #ostateczny output
-    rysuj(tabelka)
+    rysuj()
 
-def callback(input):
-        if input.isdigit():
-            return True
-        elif input == "":
-            return True
-        else:
-            return False
+
 
 def zlecenie_okno(): 
     
     okno = tk.Toplevel(root)
     reg = okno.register(callback) 
-    tk.Label(master=okno, text="Napisz, na który tydzień jest zlecenie").pack()
+    tk.Label(master=okno, text="Napisz, na który tydzień jest zlecenie\n(Można więcej niż w jest tabeli)").pack()
     tydzień = tk.Entry(master=okno,validate ="key",validatecommand =(reg, '%P'))
     tydzień.pack()
-    tk.Label(master=okno, text="Ile stołów jest w zamówieniu?").pack()
+    tk.Label(master=okno, text="Ile stołów jest w zamówieniu?\n(Stół = 1 blat + 4 nogi)").pack()
     stół = tk.Entry(master=okno,validatecommand =(reg, '%P'))
     stół.pack()
-    tk.Label(master=okno, text="Ile krzeseł jest w zamówieniu?").pack()
+    tk.Label(master=okno, text="Ile krzeseł jest w zamówieniu?\n(Krzesło = 1 siedzisko + 3 nózki)").pack()
     krzesło = tk.Entry(master=okno,validate ="key",validatecommand =(reg, '%P'))
     krzesło.pack()
     tk.Label(master=okno, text="Ile zestawów jest w zamówieniu?\n(Zestaw to stół+2*krzesło)").pack()
@@ -151,19 +162,32 @@ def zlecenie_okno():
 def strona(url="https://github.com/PiotrSzeliga/WSI-MRP"):
     open_new(url)
 
-def rysuj_czyste(tabela=tabelka_czysta):
-    rysuj(tabela)
+def rysuj_czyste(tabelka=tabelka):
+    counter = 0
+    for i in tabelka.keys():
+        k = tk.Entry(tableframe,relief="groove",bg="snow3",font=("Cambria",14),width=15)
+        k.grid(row=counter, column=0,sticky="NS")
+        k.insert(0,i)
+        counter +=1
+        counter2 = 1
+        for j in tabelka[i]:
+            e = tk.Entry(tableframe,relief="groove",bg="white",font=('Arial', 14),width=5)
+            e.grid(row=counter-1, column=counter2,sticky="NS")
+            if counter-1 == 0:
+                e.insert(0,counter2)
+            else:
+                e.insert(0, list(tabelka_czysta[i])[0])
+            counter2 += 1
+    tabelka = tabelka_czysta
 
-root = tk.Tk()
-root.geometry("1500x500")
-root.title("MRP 235032")
 buttonframe = tk.Frame(root,bg="white")
 buttonframe.rowconfigure(0,weight=1)
 buttonframe.rowconfigure(1,weight=1)
 buttonframe.rowconfigure(2,weight=1)
 buttonframe.pack(side="left",fill="y")
-#jescze ten frame miał dać się scrollować poziomo, gdy tabelka jest za szeroka, ale pierdoel to nei chce mi się. I tak jak na pierwszy raz robienia gui całkiem nieźle mi poszło
-tableframe = tk.Frame(root,bg="red")
+canvas = tk.Canvas(root,confine="false",bg="green")
+canvas.pack(side="left",fill="y")
+tableframe = tk.Frame(canvas,bg="red")
 tableframe.rowconfigure(0,weight=1)
 tableframe.rowconfigure(1,weight=1)
 tableframe.rowconfigure(2,weight=1)
@@ -183,6 +207,5 @@ button2.pack(fill="x")
 button3 = tk.Button(buttonframe, text="Przejdź do github",font=("Cambria",18),command=strona)
 button3.pack(side="bottom",fill="x")
 
-tabelka = tabelka_czysta
-rysuj_czyste()
+rysuj()
 root.mainloop()
