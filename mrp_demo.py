@@ -4,7 +4,7 @@ from webbrowser import open_new
 root = tk.Tk()
 root.geometry("910x500")
 root.resizable(width=False, height=False)
-root.title("MRP 235032")
+root.title("MRP")
 
 def callback(input):
         if input.isdigit():
@@ -14,8 +14,7 @@ def callback(input):
         else:
             return False
 
-# da się magazyn zrobić w wyskakujądcym okienku ale mi się nie chce i za dużo zachodu z tym 
-#mam dość  muszę się uczyć matematyki ale i tak całkiem ok jak na pierwszy raz z tkinter
+
 magazyn = {
     "blaty": int(input("Ile jest blatów w magazynie: ")),
     "nogi": int(input("Ile jest nóg od stołów  w magazynie: ")),
@@ -251,7 +250,7 @@ button3.pack(side="bottom",fill="x")
 def updateScrollRegion():
 	canvas.update_idletasks()
 	canvas.config(scrollregion=tableframe.bbox("all"))
-#nei wieme rftghioujrge  scroll jest na środku i nie można nim ruszyć z jakiegos powodu. przynajmniej strzałki działają eeeeeeee
+
 rysuj()
 updateScrollRegion()
 root.mainloop()
