@@ -14,11 +14,13 @@ def callback(input):
         else:
             return False
 
+# da się magazyn zrobić w wyskakujądcym okienku ale mi się nie chce i za dużo zachodu z tym 
+#mam dość  muszę się uczyć matematyki ale i tak całkiem ok jak na pierwszy raz z tkinter
 magazyn = {
-    "blaty": 1,
-    "nogi": 1,
-    "siedziska": 1,
-    "nóżki": 1
+    "blaty": int(input("Ile jest blatów w magazynie: ")),
+    "nogi": int(input("Ile jest nóg od stołów  w magazynie: ")),
+    "siedziska": int(input("Ile jest siedzisk w magazynie: ")),
+    "nóżki": int(input("Ile jest nóżek od krzeseł w magazynie: "))
 } 
 
 tabelka_czysta = {
@@ -62,6 +64,8 @@ def rysuj():
             e.grid(row=counter-1, column=counter2,sticky="NS")
             e.insert(0, j)
             counter2 += 1
+    
+    updateScrollRegion()
 
 def zlecenie(dane):
     try:
@@ -105,6 +109,8 @@ def zlecenie(dane):
     #zamówione krzesła
     tabelka["Zamówione krzesła"][tydzień-1] += krzesła
     #blaty
+    print(tabelka["Zamówione stoły"][tydzień-1])
+    print(tabelka["Wstępne blaty"][tydzień-2])
     if tabelka["Zamówione stoły"][tydzień-1]-tabelka["Wstępne blaty"][tydzień-2] >= 0:
         tabelka["Potrzebne blaty"][tydzień-2] = tabelka["Zamówione stoły"][tydzień-1]-tabelka["Wstępne blaty"][tydzień-1]      
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
@@ -137,8 +143,9 @@ def zlecenie(dane):
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne nóżki"][tydzień+i-1] = tabelka["Wstępne nóżki"][tydzień-2]-3*tabelka["Zamówione krzesła"][tydzień-1]
     #ostateczny output
+    updateScrollRegion()
     rysuj()
-
+    updateScrollRegion()
 
 
 def zlecenie_okno(): 
@@ -166,7 +173,8 @@ def zlecenie_okno():
                 return(int(tydzień.get()),int(stół.get()),int(krzesło.get()),int(zestaw.get()))
             except ValueError:
                 return None
-
+    
+    updateScrollRegion()
     
     button4 = tk.Button(master=okno,text="Zatwierdź",font=("Cambria",18),command=lambda:[zlecenie(bierz()),okno_zniszcz()]).pack()
     okno.grab_set()
@@ -174,7 +182,8 @@ def zlecenie_okno():
 def strona(url="https://github.com/PiotrSzeliga/WSI-MRP"):
     open_new(url)
 
-def rysuj_czyste(tabelka=tabelka):
+def rysuj_czyste():
+    global tabelka
     counter = 0
     for i in tabelka.keys():
         k = tk.Entry(tableframe,relief="groove",bg="snow3",font=("Cambria",14),width=15)
@@ -190,16 +199,33 @@ def rysuj_czyste(tabelka=tabelka):
             else:
                 e.insert(0, list(tabelka_czysta[i])[0])
             counter2 += 1
-    tabelka = tabelka_czysta
+        
+        tabelka = {
+    "Tydzień":              [x+1 for x in range(len(tabelka["Tydzień"]))],  
+    "Zamówione stoły":      [0 for x in range(len(tabelka["Tydzień"]))],
+    "Zamówione krzesła":    [0 for x in range(len(tabelka["Tydzień"]))],
+    "Wstępne blaty":        [magazyn["blaty"] for x in range(len(tabelka["Tydzień"]))],
+    "Potrzebne blaty":      [0 for x in range(len(tabelka["Tydzień"]))],
+    "Wstępne nogi":         [magazyn["nogi"] for x in range(len(tabelka["Tydzień"]))],
+    "Potrzebne nogi":       [0 for x in range(len(tabelka["Tydzień"]))],
+    "Wstępne siedziska":    [magazyn["siedziska"] for x in range(len(tabelka["Tydzień"]))],
+    "Potrzebne siedziska":  [0 for x in range(len(tabelka["Tydzień"]))],
+    "Wstępne nóżki":        [magazyn["nóżki"] for x in range(len(tabelka["Tydzień"]))],
+    "Potrzebne nóżki":      [0 for x in range(len(tabelka["Tydzień"]))],
+}
+    updateScrollRegion()
 
 buttonframe = tk.Frame(root,bg="white")
 buttonframe.rowconfigure(0,weight=1)
 buttonframe.rowconfigure(1,weight=1)
 buttonframe.rowconfigure(2,weight=1)
 buttonframe.pack(side="left",fill="y")
-canvas = tk.Canvas(root,confine="false",bg="green")
-canvas.pack(side="left",fill="y")
-tableframe = tk.Frame(canvas,bg="red")
+canvas = tk.Canvas(root,bg="green",height="484")
+canvas.pack(side="bottom",fill="x")
+scroll = tk.Scrollbar(root,orient="horizontal",width="500")
+scroll.pack(side="top")
+#tableframe
+tableframe = tk.Frame(canvas,bg="red",height="484")
 tableframe.rowconfigure(0,weight=1)
 tableframe.rowconfigure(1,weight=1)
 tableframe.rowconfigure(2,weight=1)
@@ -212,6 +238,9 @@ tableframe.rowconfigure(8,weight=1)
 tableframe.rowconfigure(9,weight=1)
 tableframe.rowconfigure(10,weight=1)
 tableframe.pack(side="left",fill="y")
+canvas.create_window((0, 0), window=tableframe, anchor="nw",height="484")
+canvas.configure(xscrollcommand=scroll.set, scrollregion=canvas.bbox("all"))
+scroll.configure(command=canvas.xview)
 button1 = tk.Button(buttonframe, text="Dodaj zamówienie",font=("Cambria",18),command=zlecenie_okno)
 button1.pack(fill="x")
 button2 = tk.Button(buttonframe, text="Wyczyść tabelkę",font=("Cambria",18),command=rysuj_czyste)
@@ -219,5 +248,10 @@ button2.pack(fill="x")
 button3 = tk.Button(buttonframe, text="Przejdź do github",font=("Cambria",18),command=strona)
 button3.pack(side="bottom",fill="x")
 
+def updateScrollRegion():
+	canvas.update_idletasks()
+	canvas.config(scrollregion=tableframe.bbox("all"))
+#nei wieme rftghioujrge  scroll jest na środku i nie można nim ruszyć z jakiegos powodu. przynajmniej strzałki działają eeeeeeee
 rysuj()
+updateScrollRegion()
 root.mainloop()
