@@ -35,7 +35,19 @@ tabelka_czysta = {
     "Potrzebne nóżki":      [0 for x in range(1,10)],
 }
 
-tabelka = tabelka_czysta
+tabelka = {
+    "Tydzień":              [x for x in range(1,10)],  
+    "Zamówione stoły":      [0 for x in range(1,10)],
+    "Zamówione krzesła":    [0 for x in range(1,10)],
+    "Wstępne blaty":        [magazyn["blaty"] for x in range(1,10)],
+    "Potrzebne blaty":      [0 for x in range(1,10)],
+    "Wstępne nogi":         [magazyn["nogi"] for x in range(1,10)],
+    "Potrzebne nogi":       [0 for x in range(1,10)],
+    "Wstępne siedziska":    [magazyn["siedziska"] for x in range(1,10)],
+    "Potrzebne siedziska":  [0 for x in range(1,10)],
+    "Wstępne nóżki":        [magazyn["nóżki"] for x in range(1,10)],
+    "Potrzebne nóżki":      [0 for x in range(1,10)],
+}
 
 def rysuj():
     counter = 0
@@ -101,8 +113,8 @@ def zlecenie(dane):
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne blaty"][tydzień+i-1] = tabelka["Wstępne blaty"][tydzień-2]-tabelka["Zamówione stoły"][tydzień-1]
     #nogi
-    if tabelka["Zamówione krzesła"][tydzień-1]-tabelka["Wstępne nogi"][tydzień-2] >= 0:
-        tabelka["Potrzebne nogi"][tydzień-2] = 4*tabelka["Zamówione krzesła"][tydzień-1]-tabelka["Wstępne nogi"][tydzień-1]      
+    if 4*tabelka["Zamówione stoły"][tydzień-1]-tabelka["Wstępne nogi"][tydzień-2] >= 0:
+        tabelka["Potrzebne nogi"][tydzień-2] = 4*tabelka["Zamówione stoły"][tydzień-1]-tabelka["Wstępne nogi"][tydzień-1]      
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne nogi"][tydzień+i-1] = 0
     else:
@@ -117,7 +129,7 @@ def zlecenie(dane):
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne siedziska"][tydzień+i-1] = tabelka["Wstępne siedziska"][tydzień-2]-tabelka["Zamówione krzesła"][tydzień-1]
     #nóżki
-    if tabelka["Zamówione krzesła"][tydzień-1]-tabelka["Wstępne nóżki"][tydzień-2] >= 0:
+    if 3*tabelka["Zamówione krzesła"][tydzień-1]-tabelka["Wstępne nóżki"][tydzień-2] >= 0:
         tabelka["Potrzebne nóżki"][tydzień-2] = 3*tabelka["Zamówione krzesła"][tydzień-1]-tabelka["Wstępne nóżki"][tydzień-1]      
         for i in range(len(tabelka["Tydzień"])-tydzień+1):
             tabelka["Wstępne nóżki"][tydzień+i-1] = 0
